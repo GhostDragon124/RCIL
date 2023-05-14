@@ -8,11 +8,13 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch import distributed
 from torch.nn import init
+import models
+from modules import DeeplabV3
+import torch; print(torch.cuda.is_available())
 
 import inplace_abn
-import models
 from inplace_abn import ABN, InPlaceABN, InPlaceABNSync
-from modules import DeeplabV3
+
 
 
 def make_model(opts, classes=None):
@@ -28,6 +30,29 @@ def make_model(opts, classes=None):
 
     if opts.norm_act == "iabn_sync_test":
         opts.norm_act = "iabn_sync"
+
+# def make_model(opts, classes=None):
+#     if opts.norm_act == 'iabn_sync':
+#         ### xjw fixed
+#         # norm = partial(nn.SyncBatchNorm, activation="leaky_relu", activation_param=.01)
+#         norm = nn.SyncBatchNorm
+#         activation = nn.LeakyReLU(negative_slope=0.01, inplace=True)
+#     elif opts.norm_act == 'iabn':
+#         # norm = partial(nn.BatchNorm2d, activation="leaky_relu", activation_param=.01)
+#         norm = nn.BatchNorm2d
+#         activation = nn.LeakyReLU(negative_slope=0.01, inplace=True)
+
+#     elif opts.norm_act == 'abn':
+#         # norm = partial(nn.BatchNorm2d, activation="leaky_relu", activation_param=.01)
+#         norm = nn.BatchNorm2d
+#         activation = nn.LeakyReLU(negative_slope=0.01, inplace=False)
+
+#     else:
+#         norm = nn.BatchNorm2d  # not synchronized, can be enabled with apex
+#         activation = nn.ReLU(inplace=True)
+
+#     if opts.norm_act == "iabn_sync_test":
+#         opts.norm_act = "iabn_sync"
 
     body = models.__dict__[f'net_{opts.backbone}'](norm_act=norm, output_stride=opts.output_stride)
     if not opts.no_pretrained:

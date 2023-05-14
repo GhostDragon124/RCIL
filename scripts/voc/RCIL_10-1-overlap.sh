@@ -7,8 +7,8 @@ start=`date +%s`
 START_DATE=$(date '+%Y-%m-%d')
 
 PORT=$((9000 + RANDOM % 1000))
-GPU=0,1,2,3
-NB_GPU=4
+GPU=0
+NB_GPU=1
 
 
 DATA_ROOT=/Datapath/to/PascalVOC12
